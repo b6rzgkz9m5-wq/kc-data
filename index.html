@@ -773,7 +773,7 @@ function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show"
 function refresh(){
   toast("刷新中…");
   const s=document.createElement("script");
-  s.src="https://cdn.jsdelivr.net/gh/b6rzgkz9m5-wq/kc-data@main/data.js?_="+(+new Date());
+  s.src="./data.js?_="+(+new Date());
   s.onload=function(){
     if(window.__DATA__){
       if(window.__DATA__.projects){PROJECTS_DATA.length=0;PROJECTS_DATA.push.apply(PROJECTS_DATA,window.__DATA__.projects);}
