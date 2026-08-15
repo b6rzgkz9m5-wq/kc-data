@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="深圳招标">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="data:application/manifest+json,%7B%22name%22%3A%22%E6%B7%B1%E5%9C%B3%E5%B2%A9%E5%9C%9F%E5%8B%8A%E6%B5%8B%E6%8B%9B%E6%A0%87%22%2C%22short_name%22%3A%22%E6%B7%B1%E5%9C%B3%E6%8B%9B%E6%A0%87%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%23f2f5f9%22%2C%22theme_color%22%3A%22%231d4ed8%22%7D">
+<title>深圳岩土勘测招标信息 · 手机版</title>
+<style>
+:root{--primary:#1d4ed8;--bg:#f2f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--plan:#f59e0b;--active:#16a34a;--warn:#dc2626;}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;padding-bottom:calc(env(safe-area-inset-bottom) + 16px);}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1d4ed8,#3b82f6);padding:calc(env(safe-area-inset-top) + 12px) 14px 12px;color:#fff;box-shadow:0 2px 10px rgba(29,78,216,.25);}
+.htop{display:flex;align-items:center;justify-content:space-between;}
+.htitle{font-size:18px;font-weight:700;}
+.hsub{font-size:11px;opacity:.85;margin-top:2px;}
+.refresh{background:#fff;color:var(--primary);border:none;border-radius:20px;padding:8px 14px;font-size:13px;font-weight:600;display:flex;align-items:center;gap:4px;}
+.refresh:active{transform:scale(.96);}
+.tabs{display:flex;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:15;}
+.tab{flex:1;text-align:center;padding:12px 0;font-size:14px;color:var(--muted);font-weight:600;position:relative;}
+.tab.on{color:var(--primary);}
+.tab.on::after{content:"";position:absolute;left:25%;right:25%;bottom:0;height:3px;background:var(--primary);border-radius:3px;}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:12px 12px 4px;}
+.stat{background:var(--card);border-radius:12px;padding:10px 4px;text-align:center;box-shadow:0 1px 4px rgba(15,23,42,.06);}
+.stat .num{display:block;font-size:18px;font-weight:800;line-height:1.1;}
+.stat .lab{display:block;font-size:11px;color:var(--muted);margin-top:3px;}
+.panel{padding:0 12px;}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+.chip{background:#fff;border:1px solid var(--line);color:var(--muted);border-radius:18px;padding:6px 13px;font-size:13px;flex:none;}
+.chip.on{background:var(--primary);color:#fff;border-color:var(--primary);}
+.card{background:var(--card);border-radius:14px;padding:13px;margin-bottom:11px;box-shadow:0 1px 5px rgba(15,23,42,.07);}
+.crow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:7px;}
+.idx{font-size:12px;color:var(--muted);min-width:20px;}
+.badge{font-size:11px;padding:2px 8px;border-radius:10px;font-weight:600;}
+.badge.plan{background:#fef3c7;color:#b45309;}
+.badge.warn{background:#fee2e2;color:#b91c1c;}
+.badge.st{color:#fff;}
+.watch{margin-left:auto;font-size:18px;color:#fbbf24;background:none;border:none;padding:0 2px;}
+.code{font-weight:700;font-size:13px;color:var(--primary);}
+.name{font-size:15px;font-weight:700;line-height:1.35;margin:2px 0 8px;}
+.meta{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--muted);margin-bottom:5px;}
+.meta .cat{background:#eff6ff;color:var(--primary);padding:1px 8px;border-radius:8px;font-weight:600;}
+.meta2{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:#334155;margin-top:3px;}
+.meta2 .urgent{color:var(--warn);font-weight:700;}
+.detail{display:none;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+.detail.open{display:block;}
+.dr{display:flex;justify-content:space-between;gap:10px;font-size:12px;padding:4px 0;border-bottom:1px solid #f1f5f9;}
+.dr span{color:var(--muted);}
+.dr b{font-weight:600;text-align:right;}
+.att{background:#fff7ed;color:#9a3412;font-size:12px;padding:8px;border-radius:8px;margin-top:8px;line-height:1.4;}
+.link{display:inline-block;margin-top:9px;color:var(--primary);font-size:13px;font-weight:600;text-decoration:none;}
+.empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px;}
+.toast{position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom) + 30px);transform:translateX(-50%);background:rgba(15,23,42,.9);color:#fff;padding:10px 18px;border-radius:22px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s;z-index:50;max-width:80%;text-align:center;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<header>
+  <div class="htop">
+    <div class="htxt"><div class="htitle">深圳岩土勘测招标</div><div class="hsub">数据更新：<span id="upd"></span>　·　上次刷新：<span id="lref">—</span></div></div>
+    <button class="refresh" onclick="refresh()">↻ 刷新</button>
+  </div>
+</header>
+<nav class="tabs">
+  <div class="tab on" id="tabTender" onclick="switchTab('tender')">招标信息</div>
+  <div class="tab" id="tabLand" onclick="switchTab('land')">深圳土拍</div>
+</nav>
+<section class="stats" id="stats"></section>
+<div class="panel" id="panelTender">
+  <div class="chips" id="chips"></div>
+  <div id="list"></div>
+</div>
+<div class="panel" id="panelLand" style="display:none">
+  <div class="chips" id="landFilters"></div>
+  <section class="stats" id="landStats" style="padding-top:4px"></section>
+  <div id="landList"></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const LAND_DATA = [
+  { id:"L001", code:"T107-0098", name:"后海片区商业用地", district:"南山", use:"商业", area:12345.6, buildArea:68000, method:"挂牌", dealPrice:156000, winner:"深圳市海岸投资集团有限公司", dealDate:"2026-08-08", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L002", code:"A002-0067", name:"宝安中心区居住用地", district:"宝安", use:"居住", area:28900, buildArea:145000, method:"拍卖", dealPrice:328000, winner:"深圳市人才安居集团有限公司", dealDate:"2026-08-06", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L003", code:"G12202-0089", name:"坪山中心区工业用地（新型产业）", district:"坪山", use:"工业", area:45600, buildArea:120000, method:"挂牌", dealPrice:18600, winner:"深圳市比亚迪锂电池有限公司", dealDate:"2026-08-01", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L004", code:"K103-0456", name:"龙华民治居住用地", district:"龙华", use:"居住", area:18700, buildArea:92000, method:"拍卖", dealPrice:265000, winner:"深圳市万科发展有限公司", dealDate:"2026-07-30", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L005", code:"B103-0089", name:"龙岗宝龙工业用地", district:"龙岗", use:"工业", area:33200, buildArea:98000, method:"挂牌", dealPrice:21300, winner:"深圳市汇川技术股份有限公司", dealDate:"2026-07-25", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L006", code:"A923-0034", name:"光明科学城居住用地", district:"光明", use:"居住", area:21500, buildArea:108000, method:"拍卖", dealPrice:289000, winner:"深圳市华润置地发展有限公司", dealDate:"2026-07-22", status:"done", link:"https://www.szggzy.com/" },
+  { id:"L007", code:"T107-0102", name:"后海总部基地商业用地", district:"南山", use:"商业", area:9800, buildArea:56000, method:"挂牌", dealPrice:0, winner:"—", dealDate:"", status:"listing", link:"https://www.szggzy.com/" },
+  { id:"L008", code:"A012-0078", name:"大鹏新区居住用地", district:"大鹏", use:"居住", area:16800, buildArea:67000, method:"挂牌", dealPrice:0, winner:"—", dealDate:"", status:"plan", link:"https://www.szggzy.com/" }
+];
+
+
+const PROJECTS_DATA = [
+  { id:"plan20579314", name:"樟坑径山廊示范段建设工程造价咨询", category:"咨询", org:"深圳市龙岗区建筑工务署", date:"2026-08-15", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20579314", attention:"【招标计划】工程类别：咨询；建设单位：深圳市龙岗区建筑工务署；监管部门：龙岗区住房和建设局", detail:{建设单位:"深圳市龙岗区建筑工务署", 监管部门:"龙岗区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-15 09:00:00"} },
+  { id:"plan20576523", name:"龙岗区优质饮用水入户工程（增补）水质检测", category:"其他", org:"深圳市龙岗区建筑工务署", date:"2026-08-14", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20576523", attention:"【招标计划】工程类别：其他；建设单位：深圳市龙岗区建筑工务署；监管部门：龙岗区住房和建设局", detail:{建设单位:"深圳市龙岗区建筑工务署", 监管部门:"龙岗区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-14 09:00:00"} },
+  { id:"plan20576533", name:"深圳港铜鼓航道、西部港区公共航道、蛇口航道、赤湾航道、西部政府码头港池及进港航道常年维护性疏浚项目", category:"其他", org:"深圳市交通公用设施管理处", date:"2026-08-14", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20576533", attention:"【招标计划】工程类别：其他；建设单位：深圳市交通公用设施管理处；监管部门：深圳市交通运输局", detail:{建设单位:"深圳市交通公用设施管理处", 监管部门:"深圳市交通运输局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-14 09:00:00"} },
+  { id:"plan20576537", name:"深圳东兴智谷项目全过程造价咨询服务", category:"咨询", org:"深圳市集兴产业园发展有限公司", date:"2026-08-14", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20576537", attention:"【招标计划】工程类别：咨询；建设单位：深圳市集兴产业园发展有限公司；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市集兴产业园发展有限公司", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-14 09:00:00"} },
+  { id:"plan20573966", name:"华侨城片区道路改造提升工程造价咨询", category:"咨询", org:"深圳市南山区建筑工务署", date:"2026-08-13", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20573966", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区建筑工务署；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区建筑工务署", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-13 09:00:00"} },
+  { id:"plan20568637", name:"丽康路新建工程造价咨询", category:"咨询", org:"深圳市交通公用设施建设中心", date:"2026-08-11", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20568637", attention:"【招标计划】工程类别：咨询；建设单位：深圳市交通公用设施建设中心；监管部门：其他", detail:{建设单位:"深圳市交通公用设施建设中心", 监管部门:"其他", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-11 09:00:00"} },
+  { id:"plan20568636", name:"根玉大道跨茅洲河大桥及接线道路（广田路-松福路）工程造价咨询", category:"咨询", org:"深圳市交通公用设施建设中心", date:"2026-08-11", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20568636", attention:"【招标计划】工程类别：咨询；建设单位：深圳市交通公用设施建设中心；监管部门：其他", detail:{建设单位:"深圳市交通公用设施建设中心", 监管部门:"其他", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-11 09:00:00"} },
+  { id:"plan20565506", name:"石岩街道官田学校改扩建工程（二期）", category:"其他", org:"深圳市宝安区石岩街道办事处", date:"2026-08-08", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20565506", attention:"【招标计划】工程类别：其他；建设单位：深圳市宝安区石岩街道办事处；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市宝安区石岩街道办事处", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-08 09:00:00"} },
+  { id:"plan20565508", name:"石岩街道片石路（建工二路—石奔路）新建工程", category:"其他", org:"深圳市宝安区石岩街道办事处", date:"2026-08-08", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20565508", attention:"【招标计划】工程类别：其他；建设单位：深圳市宝安区石岩街道办事处；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市宝安区石岩街道办事处", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-08 09:00:00"} },
+  { id:"plan20565510", name:"石岩街道石奔路（倚石路—片石路）新建工程", category:"其他", org:"深圳市宝安区石岩街道办事处", date:"2026-08-08", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20565510", attention:"【招标计划】工程类别：其他；建设单位：深圳市宝安区石岩街道办事处；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市宝安区石岩街道办事处", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-08 09:00:00"} },
+  { id:"plan20562087", name:"深圳湾流域市政排水管网完善工程（打包立项）（涉地铁健康度评定服务）", category:"咨询", org:"深圳市南山区水务局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562087", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区水务局；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区水务局", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562170", name:"深圳湾流域市政排水管网完善工程（打包立项）（地铁监测）", category:"咨询", org:"深圳市南山区水务局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562170", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区水务局；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区水务局", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562167", name:"樟坑径山廊示范段建设工程全过程工程咨询服务（全过程项目管理、监理、设计等）", category:"其他", org:"深圳市龙岗区城市管理和综合执法局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562167", attention:"【招标计划】工程类别：其他；建设单位：深圳市龙岗区城市管理和综合执法局；监管部门：龙岗区住房和建设局", detail:{建设单位:"深圳市龙岗区城市管理和综合执法局", 监管部门:"龙岗区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562169", name:"深圳机场卫星厅项目竣工决算咨询", category:"咨询", org:"深圳市机场（集团）有限公司", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562169", attention:"【招标计划】工程类别：咨询；建设单位：深圳市机场（集团）有限公司；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市机场（集团）有限公司", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562091", name:"珠江口流域市政排水管网完善工程（打包立项）（涉地铁健康度评定服务）", category:"咨询", org:"深圳市南山区水务局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562091", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区水务局；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区水务局", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562089", name:"珠江口流域市政排水管网完善工程（打包立项）（地铁监测）", category:"咨询", org:"深圳市南山区水务局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562089", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区水务局；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区水务局", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20562088", name:"深圳湾流域市政排水管网完善工程（打包立项）（防洪影响评价）", category:"咨询", org:"深圳市南山区水务局", date:"2026-08-07", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20562088", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区水务局；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区水务局", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-07 09:00:00"} },
+  { id:"plan20559497", name:"南山区T101-0063地块海星四区（一期）项目全过程造价咨询", category:"咨询", org:"深圳海星港口发展有限公司", date:"2026-08-06", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20559497", attention:"【招标计划】工程类别：咨询；建设单位：深圳海星港口发展有限公司；监管部门：南山区住房和建设局", detail:{建设单位:"深圳海星港口发展有限公司", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-06 09:00:00"} },
+  { id:"plan20557149", name:"红岭创客营项目", category:"咨询", org:"深圳市罗湖投资控股有限公司", date:"2026-08-05", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20557149", attention:"【招标计划】工程类别：咨询；建设单位：深圳市罗湖投资控股有限公司；监管部门：罗湖区住房和建设局", detail:{建设单位:"深圳市罗湖投资控股有限公司", 监管部门:"罗湖区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-05 09:00:00"} },
+  { id:"plan20551600", name:"大鹏办事处龙岐地块公共停车场建设工程（桩基检测工程）", category:"其他", org:"深圳市鹏泰投资开发有限公司", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551600", attention:"【招标计划】工程类别：其他；建设单位：深圳市鹏泰投资开发有限公司；监管部门：大鹏新区住房和建设局", detail:{建设单位:"深圳市鹏泰投资开发有限公司", 监管部门:"大鹏新区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551615", name:"深圳第二外国语学校改扩建工程项目全过程造价咨询", category:"咨询", org:"深圳市建筑工务署教育工程管理中心", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551615", attention:"【招标计划】工程类别：咨询；建设单位：深圳市建筑工务署教育工程管理中心；监管部门：深圳市住房和建设局", detail:{建设单位:"深圳市建筑工务署教育工程管理中心", 监管部门:"深圳市住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551594", name:"深圳市宝安区宝石路二期工程", category:"其他", org:"深圳市宝安区石岩街道办事处", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551594", attention:"【招标计划】工程类别：其他；建设单位：深圳市宝安区石岩街道办事处；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市宝安区石岩街道办事处", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551602", name:"大鹏办事处龙岐地块公共停车场建设工程（基础超前钻工程）", category:"勘察", org:"深圳市鹏泰投资开发有限公司", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551602", attention:"【招标计划】工程类别：勘察；建设单位：深圳市鹏泰投资开发有限公司；监管部门：大鹏新区住房和建设局", detail:{建设单位:"深圳市鹏泰投资开发有限公司", 监管部门:"大鹏新区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551618", name:"大学城西校区提升改造工程项目-体育场馆及周边景观项目第三方监测", category:"勘察", org:"深圳招商建设管理有限公司", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551618", attention:"【招标计划】工程类别：勘察；建设单位：深圳招商建设管理有限公司；监管部门：南山区住房和建设局", detail:{建设单位:"深圳招商建设管理有限公司", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551617", name:"大学城西校区提升改造工程项目-体育场馆及周边景观项目第三方监测", category:"勘察", org:"深圳招商建设管理有限公司", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551617", attention:"【招标计划】工程类别：勘察；建设单位：深圳招商建设管理有限公司；监管部门：南山区住房和建设局", detail:{建设单位:"深圳招商建设管理有限公司", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551598", name:"大鹏办事处龙岐地块公共停车场建设工程（监测工程）", category:"勘察", org:"深圳市鹏泰投资开发有限公司", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551598", attention:"【招标计划】工程类别：勘察；建设单位：深圳市鹏泰投资开发有限公司；监管部门：大鹏新区住房和建设局", detail:{建设单位:"深圳市鹏泰投资开发有限公司", 监管部门:"大鹏新区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20551593", name:"2026年建筑起重机械设备安全监督检测服务", category:"其他", org:"深圳市光明区建设工程质量安全监督站", date:"2026-08-01", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20551593", attention:"【招标计划】工程类别：其他；建设单位：深圳市光明区建设工程质量安全监督站；监管部门：光明区住房和建设局", detail:{建设单位:"深圳市光明区建设工程质量安全监督站", 监管部门:"光明区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-08-01 09:00:00"} },
+  { id:"plan20548980", name:"西丽枢纽片区市政道路工程-石鼓路造价咨询", category:"咨询", org:"深圳市南山区建筑工务署", date:"2026-07-31", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20548980", attention:"【招标计划】工程类别：咨询；建设单位：深圳市南山区建筑工务署；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区建筑工务署", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-31 09:00:00"} },
+  { id:"plan20524108", name:"大沙河流域市政污水管网完善工程项目（打包立项）（涉地铁第三方监测）", category:"咨询", org:"深圳市水务(集团)有限公司", date:"2026-07-30", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20524108", attention:"【招标计划】工程类别：咨询；建设单位：深圳市水务(集团)有限公司；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市水务(集团)有限公司", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-30 09:00:00"} },
+  { id:"plan20544210", name:"福田南路改造工程", category:"咨询", org:"深圳市福田区建筑工务署", date:"2026-07-29", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20544210", attention:"【招标计划】工程类别：咨询；建设单位：深圳市福田区建筑工务署；监管部门：福田区住房和建设局", detail:{建设单位:"深圳市福田区建筑工务署", 监管部门:"福田区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-29 09:00:00"} },
+  { id:"plan20541705", name:"龙坪路市政工程（龙岗大道-站前路）Ⅰ、Ⅱ标段基桩及地基基础检测", category:"其他", org:"深圳市龙岗区建筑工务署", date:"2026-07-28", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20541705", attention:"【招标计划】工程类别：其他；建设单位：深圳市龙岗区建筑工务署；监管部门：龙岗区住房和建设局", detail:{建设单位:"深圳市龙岗区建筑工务署", 监管部门:"龙岗区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-28 09:00:00"} },
+  { id:"plan20541712", name:"华泰联合证券有限责任公司深圳前海总部大楼项目工程结算复核（二审）", category:"咨询", org:"华泰联合证券有限责任公司", date:"2026-07-28", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20541712", attention:"【招标计划】工程类别：咨询；建设单位：华泰联合证券有限责任公司；监管部门：南山区住房和建设局", detail:{建设单位:"华泰联合证券有限责任公司", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-28 09:00:00"} },
+  { id:"plan20541701", name:"深汕特别合作区省级渔港经济区建设项目一期工程工程检测服务", category:"咨询", org:"深圳市深汕国际汽车城（集团）有限公司", date:"2026-07-28", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20541701", attention:"【招标计划】工程类别：咨询；建设单位：深圳市深汕国际汽车城（集团）有限公司；监管部门：深汕特别合作区住房建设和水务局", detail:{建设单位:"深圳市深汕国际汽车城（集团）有限公司", 监管部门:"深汕特别合作区住房建设和水务局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-28 09:00:00"} },
+  { id:"plan20538845", name:"深圳港大铲湾港区集装箱码头二期工程(南段)", category:"其他", org:"安速捷码头仓储服务（深圳）有限公司", date:"2026-07-27", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20538845", attention:"【招标计划】工程类别：其他；建设单位：安速捷码头仓储服务（深圳）有限公司；监管部门：深圳市交通运输局", detail:{建设单位:"安速捷码头仓储服务（深圳）有限公司", 监管部门:"深圳市交通运输局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-27 09:00:00"} },
+  { id:"plan20538408", name:"白芒小学拆除重建项目勘察", category:"勘察", org:"深圳市南山区建筑工务署", date:"2026-07-25", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20538408", attention:"【招标计划】工程类别：勘察；建设单位：深圳市南山区建筑工务署；监管部门：南山区住房和建设局", detail:{建设单位:"深圳市南山区建筑工务署", 监管部门:"南山区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-07-25 09:00:00"} },
+  { id:"plan20538415", name:"福田区公共机构供水设施更新改造工程(第三批)全过程工程咨询", category:"咨询", org:"深圳市福田区水务综合事务中心", date:"2026-07-25", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20538415", attention:"【招标计划】工程类别：咨询；建设单位：深圳市福田区水务综合事务中心；监管部门：福田区住房和建设局", detail:{建设单位:"深圳市福田区水务综合事务中心", 监管部门:"福田区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-25 09:00:00"} },
+  { id:"plan20538404", name:"河东骏濠园施工总承包（结算审核）", category:"咨询", org:"深圳市河东投资发展有限公司", date:"2026-07-25", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20538404", attention:"【招标计划】工程类别：咨询；建设单位：深圳市河东投资发展有限公司；监管部门：宝安区住房和建设局", detail:{建设单位:"深圳市河东投资发展有限公司", 监管部门:"宝安区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-25 09:00:00"} },
+  { id:"plan20535811", name:"罗湖区2026年城镇老旧小区改造第一批项目（一期）房屋建筑安全性鉴定服务", category:"其他", org:"深圳罗湖供电局", date:"2026-07-24", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20535811", attention:"【招标计划】工程类别：其他；建设单位：深圳罗湖供电局；监管部门：罗湖区住房和建设局", detail:{建设单位:"深圳罗湖供电局", 监管部门:"罗湖区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-24 09:00:00"} },
+  { id:"plan20535816", name:"光明新一代能源技术创新产业基地", category:"勘察", org:"深圳市建辰投资发展有限公司", date:"2026-07-24", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20535816", attention:"【招标计划】工程类别：勘察；建设单位：深圳市建辰投资发展有限公司；监管部门：光明区住房和建设局", detail:{建设单位:"深圳市建辰投资发展有限公司", 监管部门:"光明区住房和建设局", 计划类型:"招标项目计划", 工程类别:"勘察", 发布时间:"2026-07-24 09:00:00"} },
+  { id:"plan20533376", name:"石马径水库南部水质保障及库区连通工程", category:"其他", org:"深圳市龙华区水污染治理中心", date:"2026-07-23", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20533376", attention:"【招标计划】工程类别：其他；建设单位：深圳市龙华区水污染治理中心；监管部门：龙华区住房和建设局", detail:{建设单位:"深圳市龙华区水污染治理中心", 监管部门:"龙华区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-23 09:00:00"} },
+  { id:"plan20528163", name:"碧澜外国语学校（BIM技术应用）", category:"咨询", org:"深圳市龙华区建筑工务署", date:"2026-07-21", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20528163", attention:"【招标计划】工程类别：咨询；建设单位：深圳市龙华区建筑工务署；监管部门：龙华区住房和建设局", detail:{建设单位:"深圳市龙华区建筑工务署", 监管部门:"龙华区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-21 09:00:00"} },
+  { id:"plan20528162", name:"深圳市罗湖区东湖水厂DN1200出厂管及至莲塘水厂供水管新建工程", category:"咨询", org:"深圳市水务(集团)有限公司", date:"2026-07-21", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20528162", attention:"【招标计划】工程类别：咨询；建设单位：深圳市水务(集团)有限公司；监管部门：罗湖区住房和建设局", detail:{建设单位:"深圳市水务(集团)有限公司", 监管部门:"罗湖区住房和建设局", 计划类型:"招标项目计划", 工程类别:"咨询", 发布时间:"2026-07-21 09:00:00"} },
+  { id:"plan20524120", name:"深圳外环高速公路白花互通工程", category:"其他", org:"深圳市光明区建筑工务署", date:"2026-07-18", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20524120", attention:"【招标计划】工程类别：其他；建设单位：深圳市光明区建筑工务署；监管部门：光明区住房和建设局", detail:{建设单位:"深圳市光明区建筑工务署", 监管部门:"光明区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-18 09:00:00"} },
+  { id:"plan20524119", name:"深圳外环高速公路白花互通工程", category:"其他", org:"深圳市光明区建筑工务署", date:"2026-07-18", budget:"待定", budgetNum:0, status:"plan", deadline:"待定", deadlineDate:"", isOfficial:true, isPlan:true, link:"https://szggzy.com/jygg/details.html?contentId=20524119", attention:"【招标计划】工程类别：其他；建设单位：深圳市光明区建筑工务署；监管部门：光明区住房和建设局", detail:{建设单位:"深圳市光明区建筑工务署", 监管部门:"光明区住房和建设局", 计划类型:"招标项目计划", 工程类别:"其他", 发布时间:"2026-07-18 09:00:00"} },
+
+
+
+  {
+    id: "p001",
+    name: "麻磡老瓦房片区综合整治公共工程勘察",
+    category: "市政勘察",
+    org: "深圳市南山区（深圳公共资源交易中心）",
+    date: "2026-07-28",
+    budget: "140.33万元",
+    budgetNum: 140.33,
+    status: "ended",
+    link: "https://www.szggzy.com/jyfw/ggDetails.html?bidSectionNumber=2510-440305-04-01-933832003001&contentId=20513654&crumb=jsgc&noticeType=%E6%8B%9B%E6%A0%87%E5%85%AC%E5%91%8A",
+    isOfficial: true,
+    deadline: "2026-08-03 18:00",
+    deadlineDate: "2026-08-03T18:00",
+    attention: "需同时具备岩土工程勘察、岩土工程物探测试检测监测、工程测量三项乙级资质；接受联合体投标（≤2家，牵头人须岩土勘察乙级）；综合整治项目，南山麻磡社区",
+    reqQual: [
+      { name:"勘察", satisfiers:["岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"物探监测", satisfiers:["岩土工程物探测试检测监测乙级","岩土工程物探测试检测监测甲级"] },
+      { name:"测量", satisfiers:["工程测量乙级","工程测量甲级","工程测量丙级"] }
+    ],
+    detail: {
+      工程地址: "深圳市南山区西丽街道麻磡社区",
+      计划总投资: "17,213.16万元",
+      评标方法: "定性评审法 / 直接票决",
+      投标方式: "线上递交",
+      资质要求: "岩土工程勘察乙级 + 岩土工程物探测试检测监测乙级 + 工程测量乙级",
+      联合体: "接受，不超过2家"
+    }
+  },
+  {
+    id: "p002",
+    name: "坪山区G12202-0089号宗地项目地铁监测",
+    category: "地铁监测",
+    org: "深圳市坪山智峰产业开发有限公司",
+    date: "2026-07-18",
+    budget: "319.05万元",
+    budgetNum: 319.05,
+    status: "ended",
+    link: "https://www.szggzy.com/jygg/details.html?contentId=20524146",
+    isOfficial: true,
+    deadline: "2026-08-06 18:00",
+    deadlineDate: "2026-08-06T18:00",
+    attention: "重大项目；需岩土工程物探测试检测监测甲级 + 工程测量甲级；含自动化实时监测+人工辅助监测；毗邻14号线和在建19号线；投标保证金6万元",
+    reqQual: [
+      { name:"物探监测", satisfiers:["岩土工程物探测试检测监测甲级"] },
+      { name:"测量", satisfiers:["工程测量甲级"] }
+    ],
+    detail: {
+      工程地址: "坪山中心片区，坪山大道与兰竹西路交汇处西南侧",
+      计划总投资: "217,200万元",
+      评标方法: "定性评审法 / 直接票决",
+      监测内容: "地铁隧道结构位移及沉降、轨道变形、附属结构变形、电缆沟及共建管廊位移监测、三维激光扫描",
+      资质要求: "岩土工程物探测试检测监测甲级 + 工程测量甲级",
+      联合体: "接受，不超过2家，牵头须物探监测甲级"
+    }
+  },
+  {
+    id: "p003",
+    name: "深圳中能高重复频率X射线自由电子激光项目超前钻服务",
+    category: "建筑勘察",
+    org: "国电投电子商务平台（深圳市光明区）",
+    date: "2026-08-06",
+    budget: "802.19万元",
+    budgetNum: 802.19,
+    status: "active",
+    link: "http://www.gdtzb.com/g-zb-47354186.html",
+    isOfficial: false,
+    deadline: "2026-08-31 18:00",
+    deadlineDate: "2026-08-31T18:00",
+    attention: "重大项目；需工程勘察综合资质甲级 / 岩土工程甲级 / 岩土工程勘察甲级（三选一）；不接受联合体；桩基超前钻，查明持力层；光明科学城大科学装置区",
+    reqQual: [
+      { name:"勘察(三选一)", satisfiers:["工程勘察综合甲级","岩土工程专业甲级","岩土工程勘察甲级"] }
+    ],
+    detail: {
+      工程地址: "广东省深圳市光明区北片区，光明科学城大科学装置集群区，毗邻莲塘水库",
+      计划总投资: "1,163,499万元",
+      工程类型: "勘察 / 公开招标 / 资格后审",
+      招标内容: "探明桩基位置地层类型、深度分布，桩基础持力层埋深厚度，桩端基岩性状及不良地质条件",
+      资质要求: "工程勘察综合甲级 或 岩土工程专业甲级 或 岩土工程勘察甲级",
+      联合体: "不接受"
+    }
+  },
+  {
+    id: "p004",
+    name: "龙华区排水设施维抢修工程勘察设计（重新招标）",
+    category: "水利勘察",
+    org: "深圳市龙华排水有限公司",
+    date: "2026-07-25",
+    budget: "461.86万元",
+    budgetNum: 461.86,
+    status: "ended",
+    link: "https://www.cnhh.com/zhaobiao/show-5793737.html",
+    isOfficial: false,
+    deadline: "2026-08-10",
+    deadlineDate: "2026-08-10T23:59",
+    attention: "重新招标项目；需市政排水工程甲级 + 岩土工程勘察乙级 + 工程测量甲级；覆盖观湖、福城、观澜、民治、龙华、大浪六大片区；含勘察+市政设计",
+    reqQual: [
+      { name:"市政设计", satisfiers:["工程设计市政行业(排水工程)甲级"] },
+      { name:"勘察", satisfiers:["岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"测量", satisfiers:["工程测量甲级"] }
+    ],
+    detail: {
+      归属地: "广东 深圳市",
+      业务类型: "勘察、市政设计",
+      资质要求: "工程设计市政行业(排水工程)甲级 + 工程勘察[岩土工程(勘察)]乙级 + 工程勘察(工程测量)甲级",
+      人员要求: "设计负责人须注册公用设备工程师(给水排水)；项目负责人须勘察(岩土工程)资质单位委派",
+      招标代理: "深圳市合创建设工程顾问有限公司"
+    }
+  },
+  {
+    id: "p005",
+    name: "龙岗河流域重要河道防洪提标改造工程—屯梓河水闸拆除重建工程勘察设计",
+    category: "水利勘察",
+    org: "深圳市龙岗区（龙岗区住房和建设局监督）",
+    date: "2026-08-05",
+    budget: "118.94万元",
+    budgetNum: 118.94,
+    status: "active",
+    link: "https://bbt.bangjiantong.com/announcementDetail/78e02412d5a03ec4f5273a8530bdf076",
+    isOfficial: false,
+    deadline: "2026-08-25 18:00",
+    deadlineDate: "2026-08-25T18:00",
+    attention: "联合体不超过4家；设计+勘察一体化；含岩土工程勘察、水文地质、工程测量、综合管线物探；牵头须水利行业(河道整治/城市防洪)乙级",
+    reqQual: [
+      { name:"水利设计(牵头)", satisfiers:["水利行业(河道整治)乙级","水利行业(河道整治)甲级","水利行业(城市防洪)乙级","水利行业(城市防洪)甲级"] },
+      { name:"勘察", satisfiers:["岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"测量", satisfiers:["工程测量甲级","工程测量乙级","工程测量丙级"] }
+    ],
+    detail: {
+      工程地址: "深圳市龙岗区",
+      招标编号: "2607-440307-04-01-145395001",
+      勘察内容: "岩土工程勘察、水文地质勘察(如需)、工程测量、综合管线物探",
+      联合体: "接受，不超过4家，牵头承担设计+勘察设计管理",
+      联系人: "陈千/梁建华/林瑞霭 13242995020"
+    }
+  },
+  {
+    id: "p006",
+    name: "梧桐山片区防洪排涝及水毁修复基础设施建设工程项目工程勘察",
+    category: "水利勘察",
+    org: "深圳市罗湖区水务局",
+    date: "2026-07-24",
+    budget: "35.66万元",
+    budgetNum: 35.66,
+    status: "ended",
+    link: "https://www.cnhh.com/zhaobiao/show-5826941.html",
+    isOfficial: false,
+    deadline: "2026-08-05 18:05",
+    deadlineDate: "2026-08-05T18:05",
+    attention: "第二次采购；需岩土工程专业乙级 + 工程测量乙级；罗湖区水务项目；深圳政府采购智慧平台报名",
+    reqQual: [
+      { name:"岩土勘察", satisfiers:["岩土工程专业乙级","岩土工程专业甲级","岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"测量", satisfiers:["工程测量乙级","工程测量甲级","工程测量丙级"] }
+    ],
+    detail: {
+      项目编号: "LHZC2026070385",
+      采购方式: "自行采购（第二次）",
+      控制价: "356,600.00元",
+      资质要求: "工程勘察专业类(岩土工程专业)乙级及以上 + 工程勘察专业类(工程测量)乙级及以上",
+      报名平台: "深圳政府采购智慧平台"
+    }
+  },
+  {
+    id: "p007",
+    name: "西丽街道丽雅苑东侧挡墙治理全过程技术服务项目",
+    category: "地灾治理",
+    org: "深圳市南山区西丽街道办事处",
+    date: "2026-07-31",
+    budget: "18.60万元",
+    budgetNum: 18.60,
+    status: "ended",
+    link: "https://www.szns.gov.cn/xxgk/qzfxxgkml/tzgg/content/post_12917759.html",
+    isOfficial: true,
+    deadline: "2026-08-07 18:00",
+    deadlineDate: "2026-08-07T18:00",
+    attention: "存在地质灾害风险（暴雨致挡土墙涌黄泥水）；需地质灾害评估和治理工程勘察设计资质乙级及以上；含测绘、勘察、设计、监测全流程；不接受联合体；邮箱报名xljdcgxz@szns.gov.cn",
+    reqQual: [
+      { name:"地灾资质", satisfiers:["地质灾害评估和治理工程勘察设计乙级","地质灾害评估和治理工程勘察设计甲级"] }
+    ],
+    detail: {
+      项目位置: "南山区西丽街道丽雅社区丽雅苑东侧（临近留仙洞地铁E出口）",
+      风险情况: "边坡挡土墙泄水孔涌黄泥水，墙后填土流失，存在地质灾害风险",
+      服务内容: "挡墙治理全过程技术服务（含测绘、勘察、设计、监测）",
+      资质要求: "地质灾害评估和治理工程勘察设计资质乙级及以上 + 营业执照含岩土工程/地灾治理/工程勘察设计",
+      联合体: "不接受，不允许分包转包",
+      报名方式: "邮箱提交 xljdcgxz@szns.gov.cn 或递交至西丽街道办2015号313室"
+    }
+  },
+  {
+    id: "p008",
+    name: "地下隧道工程地质灾害超前探测和监测预警技术应用项目",
+    category: "地灾治理",
+    org: "深圳市（中国政府采购网深圳分网）",
+    date: "2026-07-27",
+    budget: "160.00万元",
+    budgetNum: 160.00,
+    status: "ended",
+    link: "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202607/t20260727_27014175.htm",
+    isOfficial: true,
+    deadline: "2026-08-07 08:30",
+    deadlineDate: "2026-08-07T08:30",
+    attention: "项目编号SZDL2026001226；接受联合体投标；地质灾害超前探测+监测预警技术应用；政府采购项目",
+    reqQual: [],
+    detail: {
+      项目编号: "SZDL2026001226",
+      项目预算: "1,600,000.00元",
+      最高限价: "1,600,000.00元",
+      采购需求: "地下隧道工程地质灾害超前探测和监测预警技术应用（详见招标文件）",
+      联合体: "接受，详见申请人资格要求",
+      投标截止: "2026-08-07 08:30"
+    }
+  },
+  {
+    id: "p009",
+    name: "华强激光城市更新移交07-08-02地块项目基坑支护施工图第三方审查及勘察文件审查",
+    category: "文件审查",
+    org: "深圳市福田安居有限公司",
+    date: "2026-07-29",
+    budget: "7.18万元",
+    budgetNum: 7.18,
+    status: "active",
+    link: "https://www.cnhh.com/zhaobiao/show-5856447.html",
+    isOfficial: false,
+    deadline: "2026-08-19",
+    deadlineDate: "2026-08-19T23:59",
+    attention: "需施工图设计文件审查一类资质；项目负责人须注册土木工程师(岩土)；基坑支护投资额2046.94万元；勘察钻孔进尺1000米；含程序性+技术性审查",
+    reqQual: [
+      { name:"审图资质", satisfiers:["施工图设计文件审查一类"] }
+    ],
+    detail: {
+      项目地址: "深圳市福田区",
+      用地面积: "4,530.50平方米，计容建筑面积19,626平方米",
+      基坑投资: "2,046.94万元（暂定）",
+      勘察钻孔: "1,000米",
+      资质要求: "施工图设计文件审查一类",
+      审查内容: "岩土工程勘察文件审查(程序性+技术性) + 基坑支护施工图审查"
+    }
+  },
+  {
+    id: "p010",
+    name: "横岗人民公园改造提升（含松柏片区社会停车场）工程勘察技术服务",
+    category: "市政勘察",
+    org: "深圳市龙岗区（横岗）",
+    date: "2026-07-24",
+    budget: "未公开",
+    budgetNum: 0,
+    status: "ended",
+    link: "https://www.chinamae.com/purchases/5629e6e22a952a1a54c1e0e3629f094f.html",
+    isOfficial: false,
+    deadline: "2026-08-04 14:30",
+    deadlineDate: "2026-08-04T14:30",
+    attention: "需岩土工程勘察乙级或以上；不接受联合体、不允许分包转包；标书费500元；罗湖区百仕达大厦27B报名",
+    reqQual: [
+      { name:"勘察", satisfiers:["岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] }
+    ],
+    detail: {
+      报名时间: "2026年7月24日至7月31日（工作日9:00-12:00, 14:30-17:30）",
+      报名地点: "深圳市罗湖区太宁路2号百仕达大厦27B",
+      资质要求: "工程勘察专业类【岩土工程(岩土工程勘察)】乙级或以上",
+      标书费: "500.00元（售后不退）",
+      联合体: "不接受"
+    }
+  },
+  {
+    id: "p011",
+    name: "平智一路南段市政工程（勘察）",
+    category: "市政勘察",
+    org: "深圳市龙岗区建筑工务署",
+    date: "2026-07-23",
+    budget: "85.88万元",
+    budgetNum: 85.88,
+    status: "ended",
+    link: "https://www.tujianzhaobiao.com/news-21ff847ce49e326ac3087cfceec15527",
+    isOfficial: false,
+    deadline: "2026-08-12 18:00",
+    deadlineDate: "2026-08-12T18:00",
+    attention: "联合体最多两家，牵头须岩土工程勘察乙级；含地质勘察、地形测量、地下管线探测、工程物探、超前钻、地灾评估；龙岗区",
+    reqQual: [
+      { name:"勘察", satisfiers:["岩土工程勘察乙级","岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"测量", satisfiers:["工程测量丙级","工程测量乙级","工程测量甲级"] }
+    ],
+    detail: {
+      招标编号: "2606-440307-04-01-104583",
+      计划总投资: "19,000万元",
+      勘察内容: "地质勘察(初勘/详勘/补勘)、地形测量、土石方类别划分、地下管线探测、工程物探、超前钻、地灾评估",
+      资质要求: "岩土工程勘察乙级 + 工程测量丙级及以上",
+      联合体: "接受，最多2家",
+      联系人: "郭楚楠 0755-33205467"
+    }
+  },
+  {
+    id: "p012",
+    name: "深圳市第二强制隔离戒毒所工程（勘察）",
+    category: "招标计划",
+    org: "深圳市龙华区建筑工务署",
+    date: "2026-07-07",
+    budget: "550.00万元",
+    budgetNum: 550.00,
+    status: "plan",
+    link: "https://www.szggzy.com/jygg/details.html?contentId=20499592",
+    isOfficial: true,
+    deadline: "预计招标 2026-08-06 至 2026-10-05",
+    deadlineDate: null,
+    attention: "招标计划阶段（预告）；龙华区大浪街道茜坑水厂西侧；建筑面积93,800平方米；预计8月上旬正式招标",
+    reqQual: [],
+    detail: {
+      项目位置: "深圳市龙华区大浪街道茜坑水厂西侧及南侧地块",
+      建筑面积: "93,800平方米（计容72,570㎡，不计容21,230㎡）",
+      用地面积: "约5.65公顷",
+      预计招标: "2026-08-06 至 2026-10-05",
+      工程类型: "勘察 / 公开招标",
+      监督部门: "龙华区住房和建设局"
+    }
+  },
+  {
+    id: "p013",
+    name: "马蹄山公园勘察",
+    category: "市政勘察",
+    org: "深圳市龙岗区",
+    date: "2026-08-05",
+    budget: "138.65万元",
+    budgetNum: 138.65,
+    status: "active",
+    link: "https://www.gc-zb.com/read-767530802.html",
+    isOfficial: false,
+    deadline: "详见公告",
+    deadlineDate: "",
+    attention: "需岩土工程勘察甲级 + 工程测量丙级；接受联合体（≤2家）；含初勘、详勘、补勘、地形测量、管线物探、工程物探；计划总投资15,898.83万元",
+    reqQual: [
+      { name:"勘察", satisfiers:["岩土工程勘察甲级","工程勘察综合甲级"] },
+      { name:"测量", satisfiers:["工程测量丙级","工程测量乙级","工程测量甲级"] }
+    ],
+    detail: {
+      工程类型: "勘察 / 公开招标",
+      计划总投资: "15,898.83万元",
+      勘察内容: "初步勘察、详细勘察、补充详细勘察、地形测量、现状植被测绘、土壤检测、地下管线探测、工程物探",
+      资质要求: "岩土工程勘察甲级 + 工程测量丙级及以上",
+      联合体: "接受，不超过2家",
+      评标方法: "定性评审法 / 直接票决"
+    }
+  },
+  {
+    id: "p014",
+    name: "地基基础钻芯综合服务项目",
+    category: "建筑勘察",
+    org: "深圳市宝安区住房和建设事务中心",
+    date: "2026-07-29",
+    budget: "900.00万元",
+    budgetNum: 900.00,
+    status: "ended",
+    link: "https://www.ccgp.gov.cn/cggg/dfgg/gkzb/202607/t20260729_27033830.htm",
+    isOfficial: true,
+    deadline: "2026-08-10 14:30",
+    deadlineDate: "2026-08-10T14:30",
+    attention: "项目编号BADL2026000143；预算900万元；不接受联合体投标；宝安区住房和建设事务中心采购；地基基础钻芯综合服务",
+    reqQual: [],
+    detail: {
+      项目编号: "BADL2026000143",
+      项目预算: "9,000,000.00元",
+      最高限价: "9,000,000.00元",
+      采购单位: "深圳市宝安区住房和建设事务中心",
+      联合体: "不接受",
+      开标时间: "2026-08-10 14:30"
+    }
+  },
+  {
+    id: "p015",
+    name: "罗湖区住房和建设局2026年建设工程勘察及设计文件抽查审查服务项目",
+    category: "文件审查",
+    org: "深圳市罗湖区住房和建设局",
+    date: "2026-07-29",
+    budget: "48.00万元",
+    budgetNum: 48.00,
+    status: "ended",
+    link: "https://www.szlh.gov.cn/zwfw/zffw/tzgg/content/post_12913144.html",
+    isOfficial: true,
+    deadline: "2026-08-03 10:00",
+    deadlineDate: "2026-08-03T10:00",
+    attention: "勘察及设计文件抽查审查服务；已成交供应商：深圳市华森建筑工程咨询有限公司；成交金额47.95万元；服务期1年",
+    reqQual: [],
+    detail: {
+      项目编号: "LHZXJY-2026-00272",
+      预算金额: "480,000元",
+      成交金额: "479,500元",
+      成交供应商: "深圳市华森建筑工程咨询有限公司",
+      采购方式: "公开征集评审定标",
+      服务期: "1年（自合同签订之日起）"
+    }
+  },
+  {
+    id: "p016",
+    name: "综合赛事训练馆南楼项目基坑和东侧边坡第三方监测",
+    category: "建筑勘察",
+    org: "深圳市特发深高公园管理有限公司",
+    date: "2026-07-27",
+    budget: "34.00万元",
+    budgetNum: 34.00,
+    status: "ended",
+    link: "https://www.cnhh.com/zhaobiao/show-5836603.html",
+    isOfficial: false,
+    deadline: "2026-07-28 16:00",
+    deadlineDate: "2026-07-28T16:00",
+    attention: "福田区；基坑和东侧边坡第三方监测；竞争性谈判；不接受联合体；服务期488天；项目编号YG26ZT0045862",
+    reqQual: [],
+    detail: {
+      项目编号: "YG26ZT0045862",
+      项目地址: "广东省深圳市福田区",
+      采购方式: "竞争性谈判（邀请）",
+      评审方法: "经评审的最低投标价法",
+      联合体: "不接受",
+      服务期: "488天"
+    }
+  },
+  {
+    id: "p017",
+    name: "布吉社区大坪部队西南侧与莲花山庄交界处山体挡墙等2处地质灾害和危险边坡治理工程",
+    category: "地灾治理",
+    org: "深圳市龙岗区布吉街道办事处",
+    date: "2026-07-28",
+    budget: "161.97万元",
+    budgetNum: 161.97,
+    status: "ended",
+    link: "https://szggzy.com/mobile/jygg/details.html?contentId=20541765",
+    isOfficial: true,
+    deadline: "2026-08-03 18:00",
+    deadlineDate: "2026-08-03T18:00",
+    attention: "需地基基础专业承包三级或地灾防治施工乙级；微型桩+面板+抗滑肋支护；不含联合体；计划总投资230.18万元；龙岗区布吉街道",
+    reqQual: [
+      { name:"施工资质", satisfiers:["地基基础工程专业承包三级","地质灾害防治单位施工乙级"] }
+    ],
+    detail: {
+      工程地址: "广东省深圳市龙岗区布吉街道辖区",
+      计划总投资: "230.18万元",
+      计划工期: "240天",
+      资质要求: "地基基础工程专业承包三级及以上 或 地质灾害防治单位施工乙级及以上",
+      联合体: "不接受",
+      评标方法: "定性评审法 / 直接票决"
+    }
+  },
+  {
+    id: "p018",
+    name: "2026-2028年光明区招拍挂地块地质灾害危险性评估技术服务",
+    category: "地灾治理",
+    org: "深圳市规划和自然资源局光明管理局",
+    date: "2026-08-06",
+    budget: "75.04万元",
+    budgetNum: 75.04,
+    status: "active",
+    link: "https://www.cnhh.com/zhaobiao/show-5893994.html",
+    isOfficial: false,
+    deadline: "2026-08-18 14:30",
+    deadlineDate: "2026-08-18T14:30",
+    attention: "需地质灾害评估和治理工程勘查设计甲级；光明区招拍挂地块地灾评估；采购代理：深圳市深水水务咨询有限公司",
+    reqQual: [
+      { name:"地灾资质", satisfiers:["地质灾害评估和治理工程勘察设计甲级"] }
+    ],
+    detail: {
+      采购单位: "深圳市规划和自然资源局光明管理局",
+      采购代理: "深圳市深水水务咨询有限公司",
+      资质要求: "地质灾害评估和治理工程勘查设计甲级",
+      投标截止: "2026年8月18日14点30分",
+      获取文件地点: "深圳市罗湖区清水河街道清水河一路112号罗湖投资控股大厦裙楼401"
+    }
+  },
+  {
+    id: "p019",
+    name: "2026-2027年度南山区交通综治及道路交通通畅工程勘察设计",
+    category: "市政勘察",
+    org: "深圳市南山区建筑工务署",
+    date: "2026-08-05",
+    budget: "133.11万元",
+    budgetNum: 133.11,
+    status: "ended",
+    link: "https://www.szggzy.com/jyfw/ggDetails.html?contentId=20510805&noticeType=%E6%8B%9B%E6%A0%87%E5%85%AC%E5%91%8A&bidSectionNumber=2607-440300-04-01-900004001001&crumb=jsgc",
+    isOfficial: true,
+    deadline: "2026-08-10 18:00",
+    deadlineDate: "2026-08-10T18:00",
+    attention: "需市政行业(道路工程)乙级 + 岩土工程乙级；含可研勘察、初勘、详勘及施工配合；联合体≤2家（牵头负责设计）；南山交通综治项目",
+    reqQual: [
+      { name:"设计", satisfiers:["工程设计市政行业(道路工程)乙级","工程设计市政行业(道路工程)甲级"] },
+      { name:"勘察", satisfiers:["岩土工程乙级","岩土工程专业甲级","岩土工程勘察甲级","工程勘察综合甲级"] }
+    ],
+    detail: {
+      招标编号: "2607-440300-04-01-900004001",
+      计划总投资: "3,000万元",
+      工程地址: "深圳南山区",
+      勘察内容: "可行性研究勘察、初步勘察、详细勘察及施工配合",
+      资质要求: "工程设计市政行业(道路工程)乙级 + 工程勘察专业类(岩土工程)乙级",
+      联合体: "接受，≤2家，牵头负责设计"
+    }
+  }
+];
+
+/* ============================================================
+   常量
+   ============================================================ */
+
+const LAST_UPDATE = "2026-08-15 10:00";
+
+const $ = s => document.querySelector(s);
+let currentTab = "tender";
+let filterCat = "all";
+let landFilter = "all";
+
+function statusText(s){return {active:"投标中",ended:"已截止",plan:"预告中"}[s]||s;}
+function isWarn(p){return (p.attention||"").indexOf("待核实")>=0;}
+function fmtDate(d){return d?String(d).slice(0,10):"—";}
+function getCountdown(p){
+  if(p.status!=="active"||!p.deadlineDate) return null;
+  const diff = new Date(p.deadlineDate+"T00:00:00") - new Date();
+  if(diff<0) return {text:"已截止",urgent:true};
+  const days=Math.floor(diff/86400000);
+  return {text:"剩 "+days+" 天",urgent:days<=3};
+}
+const watched = {};
+try{Object.assign(watched, JSON.parse(localStorage.getItem("mobile_watch")||"{}"));}catch(e){}
+
+function renderStats(){
+  const all=PROJECTS_DATA;
+  const plan=all.filter(p=>p.status==="plan").length;
+  const active=all.filter(p=>p.status==="active").length;
+  const warn=all.filter(isWarn).length;
+  const land=LAND_DATA.filter(l=>l.status==="done").length;
+  const cards=[
+    {n:active,t:"投标中",c:"var(--active)"},
+    {n:plan,t:"预告中",c:"var(--plan)"},
+    {n:warn,t:"待核实",c:"var(--warn)"},
+    {n:land,t:"土拍成交",c:"var(--primary)"}
+  ];
+  $("#stats").innerHTML=cards.map(s=>`<div class="stat"><span class="num" style="color:${s.c}">${s.n}</span><span class="lab">${s.t}</span></div>`).join("");
+}
+
+function renderChips(){
+  const cats=["all","plan","active","ended"].filter(c=>c==="all"||PROJECTS_DATA.some(p=>p.status===c));
+  const names={all:"全部",active:"投标中",plan:"预告中",ended:"已截止"};
+  let h=`<span class="chip ${filterCat==='all'?'on':''}" onclick="setFilter('all')">全部</span>`;
+  ["plan","active","ended"].forEach(s=>{ if(cats.includes(s)) h+=`<span class="chip ${filterCat===s?'on':''}" onclick="setFilter('${s}')">${names[s]}</span>`;});
+  h+=`<span class="chip ${filterCat==='warn'?'on':''}" onclick="setFilter('warn')">待核实</span>`;
+  h+=`<span class="chip ${filterCat==='watched'?'on':''}" onclick="setFilter('watched')">★ 我的收藏</span>`;
+  $("#chips").innerHTML=h;
+}
+function setFilter(c){filterCat=c;renderChips();renderList();}
+
+function renderList(){
+  let list=PROJECTS_DATA.filter(p=>{
+    if(filterCat==="all")return true;
+    if(filterCat==="warn")return isWarn(p);
+    if(filterCat==="watched")return !!watched[p.id];
+    return p.status===filterCat;
+  });
+  list.sort((a,b)=>(Number(!!b.isPlan)-Number(!!a.isPlan))|| (b.date||"").localeCompare(a.date||""));
+  if(!list.length){$("#list").innerHTML='<div class="empty">'+(filterCat==="watched"?"暂无收藏，点击卡片右上角 ☆ 即可收藏":"暂无符合条件的项目")+'</div>';return;}
+  $("#list").innerHTML=list.map((p,i)=>{
+    const st=statusText(p.status);
+    const stColor=p.status==="plan"?"var(--plan)":p.status==="active"?"var(--active)":"var(--muted)";
+    const warn=isWarn(p);
+    const cd=getCountdown(p);
+    const w=watched[p.id]?"★":"☆";
+    const detailRows=p.detail?Object.entries(p.detail).map(([k,v])=>`<div class="dr"><span>${k}</span><b>${v||"—"}</b></div>`).join(""):"";
+    return `<div class="card" onclick="toggleDetail('${p.id}')">
+      <div class="crow">
+        <span class="idx">${i+1}</span>
+        ${p.isPlan?'<span class="badge plan">📋 招标计划</span>':''}
+        ${warn?'<span class="badge warn">⚠ 待核实</span>':''}
+        <span class="badge st" style="background:${stColor}">${st}</span>
+        <span class="watch" onclick="event.stopPropagation();toggleWatch('${p.id}')">${w}</span>
+      </div>
+      <div class="name">${p.name}</div>
+      <div class="meta"><span class="cat">${p.category||"—"}</span><span>🏢 ${p.org||"—"}</span></div>
+      <div class="meta2"><span>📅 ${fmtDate(p.date)}</span><span>💰 ${p.budget||"—"}</span>${cd?`<span class="${cd.urgent?'urgent':''}">⏳ ${cd.text}</span>`:''}</div>
+      <div class="detail" id="d_${p.id}">
+        ${detailRows?`<div class="dblock">${detailRows}</div>`:''}
+        ${p.attention?`<div class="att">${p.attention}</div>`:''}
+        ${p.link?`<a class="link" href="${p.link}" target="_blank" onclick="event.stopPropagation()">查看官方详情 ↗</a>`:''}
+      </div>
+    </div>`;
+  }).join("");
+}
+function toggleDetail(id){const el=document.getElementById("d_"+id);if(el)el.classList.toggle("open");}
+function toggleWatch(id){watched[id]=!watched[id];localStorage.setItem("mobile_watch",JSON.stringify(watched));renderList();}
+
+function renderLandStats(){
+  const done=LAND_DATA.filter(l=>l.status==="done");
+  const area=done.reduce((s,l)=>s+(l.area||0),0);
+  const price=done.reduce((s,l)=>s+(l.dealPrice||0),0);
+  const fmtP=w=>w>0?(w>=10000?(w/10000).toFixed(1)+"亿":"¥"+w.toLocaleString()+"万"):"—";
+  const fmtA=a=>a>0?(a>=10000?(a/10000).toFixed(2)+"万㎡":a.toLocaleString()+"㎡"):"—";
+  $("#landStats").innerHTML=[
+    {n:done.length+"宗",t:"已成交"},
+    {n:fmtA(area),t:"成交面积"},
+    {n:fmtP(price),t:"成交金额"},
+    {n:LAND_DATA.length+"宗",t:"地块总数"}
+  ].map(s=>`<div class="stat"><span class="num" style="color:var(--primary)">${s.n}</span><span class="lab">${s.t}</span></div>`).join("");
+}
+function renderLandFilters(){
+  const ds=["all",...new Set(LAND_DATA.map(l=>l.district))];
+  $("#landFilters").innerHTML=ds.map(d=>`<span class="chip ${landFilter===d?'on':''}" onclick="setLandFilter('${d}')">${d==='all'?'全部区域':d}</span>`).join("");
+}
+const landST={done:"已成交",listing:"挂牌中",plan:"预告"};
+function renderLand(){
+  let list=LAND_DATA.filter(l=>landFilter==="all"||l.district===landFilter);
+  list.sort((a,b)=>(b.dealDate||"").localeCompare(a.dealDate||""));
+  if(!list.length){$("#landList").innerHTML='<div class="empty">暂无地块</div>';return;}
+  const fmtP=w=>w>0?(w>=10000?(w/10000).toFixed(1)+"亿":"¥"+w.toLocaleString()+"万"):"—";
+  const fmtA=a=>a>0?a.toLocaleString()+"㎡":"—";
+  $("#landList").innerHTML=list.map(l=>`
+    <div class="card">
+      <div class="crow"><span class="code">${l.code}</span><span class="badge st" style="background:${l.status==='done'?'var(--active)':l.status==='plan'?'var(--plan)':'var(--primary)'}">${landST[l.status]}</span></div>
+      <div class="name">${l.name}</div>
+      <div class="meta"><span class="cat">${l.district}</span><span>${l.use}</span><span>${l.method}</span></div>
+      <div class="meta2"><span>📐 ${fmtA(l.area)}</span><span>💰 ${fmtP(l.dealPrice)}</span></div>
+      <div class="meta2"><span>🏆 ${l.winner||"—"}</span><span>📅 ${l.dealDate||"—"}</span></div>
+      ${l.link?`<a class="link" href="${l.link}" target="_blank">查看 ↗</a>`:''}
+    </div>`).join("");
+}
+function setLandFilter(d){landFilter=d;renderLandFilters();renderLand();}
+
+function switchTab(t){
+  currentTab=t;
+  $("#tabTender").classList.toggle("on",t==="tender");
+  $("#tabLand").classList.toggle("on",t==="land");
+  $("#panelTender").style.display=t==="tender"?"block":"none";
+  $("#panelLand").style.display=t==="land"?"block":"none";
+  localStorage.setItem("mobile_tab",t);
+}
+
+let toastTimer;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),1900);}
+
+function refresh(){
+  toast("刷新中…");
+  const s=document.createElement("script");
+  s.src="https://cdn.jsdelivr.net/gh/b6rzgkz9m5-wq/kc-data@main/data.js?_="+(+new Date());
+  s.onload=function(){
+    if(window.__DATA__){
+      if(window.__DATA__.projects){PROJECTS_DATA.length=0;PROJECTS_DATA.push.apply(PROJECTS_DATA,window.__DATA__.projects);}
+      if(window.__DATA__.land){LAND_DATA.length=0;LAND_DATA.push.apply(LAND_DATA,window.__DATA__.land);}
+      if(window.__DATA__.update)LAST_UPDATE=window.__DATA__.update;
+      var _d=new Date();localStorage.setItem("lastRefresh",(_d.getMonth()+1)+"-"+_d.getDate()+" "+String(_d.getHours()).padStart(2,"0")+":"+String(_d.getMinutes()).padStart(2,"0"));
+      renderAll();
+      toast("已更新到最新");
+    }else{toast("数据格式异常");}
+    s.remove();
+  };
+  s.onerror=function(){toast("离线模式：数据每日 10:00 自动更新");s.remove();};
+  document.head.appendChild(s);
+}
+
+let startY=0,pulling=0;
+document.addEventListener("touchstart",e=>{startY=e.touches[0].clientY;},{passive:true});
+document.addEventListener("touchmove",e=>{
+  if(window.scrollY<=0 && e.touches[0].clientY-startY>70 && !pulling){pulling=1;refresh();}
+},{passive:true});
+document.addEventListener("touchend",()=>{pulling=0;});
+
+function renderAll(){
+  renderStats();renderChips();renderList();
+  renderLandStats();renderLandFilters();renderLand();
+  $("#upd").textContent=LAST_UPDATE;
+  $("#lref").textContent=localStorage.getItem("lastRefresh")||"—";
+}
+renderAll();
+try{const st=localStorage.getItem("mobile_tab");if(st)switchTab(st);}catch(e){}
+</script>
+</body>
+</html>
