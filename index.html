@@ -31,7 +31,7 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1d4ed
 .stat .num{display:block;font-size:18px;font-weight:800;line-height:1.1;}
 .stat .lab{display:block;font-size:11px;color:var(--muted);margin-top:3px;}
 .panel{padding:0 12px;}
-.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0;white-space:nowrap;-webkit-overflow-scrolling:touch;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;padding:9px 10px;white-space:nowrap;}\n.srclabel{font-size:12px;color:var(--muted);padding:6px 12px 0;font-weight:700;}
 .chip{background:#fff;border:1px solid var(--line);color:var(--muted);border-radius:18px;padding:6px 13px;font-size:13px;flex:none;}
 .chip.on{background:var(--primary);color:#fff;border-color:var(--primary);}
 .card{background:var(--card);border-radius:14px;padding:13px;margin-bottom:11px;box-shadow:0 1px 5px rgba(15,23,42,.07);}
@@ -73,6 +73,8 @@ header{position:sticky;top:0;z-index:20;background:linear-gradient(135deg,#1d4ed
 </nav>
 <section class="stats" id="stats"></section>
 <div class="panel" id="panelTender">
+  <div class="srclabel">按来源分类</div>
+  <div class="chips" id="srcChips"></div>
   <div class="chips" id="chips"></div>
   <div id="list"></div>
 </div>
@@ -644,9 +646,17 @@ const LAST_UPDATE = "2026-08-15 10:00";
 const $ = s => document.querySelector(s);
 let currentTab = "tender";
 let filterCat = "all";
+let srcFilter = "all";
 let landFilter = "all";
 
 function statusText(s){return {active:"投标中",ended:"已截止",plan:"预告中"}[s]||s;}
+function sourceOf(p){
+  const t=(p.org||"")+(p.name||"");
+  if(/街道|办事处|社区|股份合作|集体资产|城中村|旧改|居委会|社区工作站|集体/.test(t)) return "街道办";
+  if(/集团|有限公司|投资|置业|安居|建发|地铁|机场|能源|盐田港|招商|鹏泰|深汕|特区建发|国资|股份|产发|城发|海星|特发|华润|万科|比亚迪|人才安居|产业|发展有限公司|码头|港务|电投|电网|电力/.test(t)) return "国企";
+  return "交易中心";
+}
+function srcColor(s){return s==="街道办"?"#0891b2":s==="国企"?"#7c3aed":"#1d4ed8";}
 function isWarn(p){return (p.attention||"").indexOf("待核实")>=0;}
 function fmtDate(d){return d?String(d).slice(0,10):"—";}
 function getCountdown(p){
@@ -661,19 +671,21 @@ try{Object.assign(watched, JSON.parse(localStorage.getItem("mobile_watch")||"{}"
 
 function renderStats(){
   const all=PROJECTS_DATA;
-  const plan=all.filter(p=>p.status==="plan").length;
-  const active=all.filter(p=>p.status==="active").length;
-  const warn=all.filter(isWarn).length;
+  const cnt=s=>all.filter(p=>sourceOf(p)===s).length;
   const land=LAND_DATA.filter(l=>l.status==="done").length;
   const cards=[
-    {n:active,t:"投标中",c:"var(--active)"},
-    {n:plan,t:"预告中",c:"var(--plan)"},
-    {n:warn,t:"待核实",c:"var(--warn)"},
+    {n:cnt("交易中心"),t:"交易中心",c:"#1d4ed8"},
+    {n:cnt("国企"),t:"国企",c:"#7c3aed"},
+    {n:cnt("街道办"),t:"街道办",c:"#0891b2"},
     {n:land,t:"土拍成交",c:"var(--primary)"}
   ];
   $("#stats").innerHTML=cards.map(s=>`<div class="stat"><span class="num" style="color:${s.c}">${s.n}</span><span class="lab">${s.t}</span></div>`).join("");
 }
 
+function renderSrcChips(){
+  const srcs=["all","交易中心","国企","街道办"];
+  $("#srcChips").innerHTML=srcs.map(s=>`<span class="chip ${srcFilter===s?'on':''}" onclick="setSrc('${s}')">${s==='all'?'全部来源':s}</span>`).join("");
+}
 function renderChips(){
   const cats=["all","plan","active","ended"].filter(c=>c==="all"||PROJECTS_DATA.some(p=>p.status===c));
   const names={all:"全部",active:"投标中",plan:"预告中",ended:"已截止"};
@@ -684,9 +696,11 @@ function renderChips(){
   $("#chips").innerHTML=h;
 }
 function setFilter(c){filterCat=c;renderChips();renderList();}
+function setSrc(s){srcFilter=s;renderSrcChips();renderList();}
 
 function renderList(){
   let list=PROJECTS_DATA.filter(p=>{
+    if(srcFilter!=="all" && sourceOf(p)!==srcFilter) return false;
     if(filterCat==="all")return true;
     if(filterCat==="warn")return isWarn(p);
     if(filterCat==="watched")return !!watched[p.id];
@@ -706,6 +720,7 @@ function renderList(){
         <span class="idx">${i+1}</span>
         ${p.isPlan?'<span class="badge plan">📋 招标计划</span>':''}
         ${warn?'<span class="badge warn">⚠ 待核实</span>':''}
+        <span class="badge st" style="background:${srcColor(sourceOf(p))}">${sourceOf(p)}</span>
         <span class="badge st" style="background:${stColor}">${st}</span>
         <span class="watch" onclick="event.stopPropagation();toggleWatch('${p.id}')">${w}</span>
       </div>
@@ -771,22 +786,28 @@ function switchTab(t){
 let toastTimer;
 function toast(msg){const t=$("#toast");t.textContent=msg;t.classList.add("show");clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove("show"),1900);}
 
-function refresh(){
-  toast("刷新中…");
+function refresh(silent){
+  if(!silent) toast("刷新中…");
   const s=document.createElement("script");
   s.src="./data.js?_="+(+new Date());
   s.onload=function(){
     if(window.__DATA__){
-      if(window.__DATA__.projects){PROJECTS_DATA.length=0;PROJECTS_DATA.push.apply(PROJECTS_DATA,window.__DATA__.projects);}
+      if(window.__DATA__.projects){
+        const autoPrefix=["plan","2851-","2850-","3196-"];
+        const isAuto=id=>autoPrefix.some(p=>String(id).startsWith(p));
+        const manual=PROJECTS_DATA.filter(p=>!isAuto(p.id));
+        PROJECTS_DATA.length=0;
+        PROJECTS_DATA.push.apply(PROJECTS_DATA, window.__DATA__.projects.concat(manual));
+      }
       if(window.__DATA__.land){LAND_DATA.length=0;LAND_DATA.push.apply(LAND_DATA,window.__DATA__.land);}
       if(window.__DATA__.update)LAST_UPDATE=window.__DATA__.update;
       var _d=new Date();localStorage.setItem("lastRefresh",(_d.getMonth()+1)+"-"+_d.getDate()+" "+String(_d.getHours()).padStart(2,"0")+":"+String(_d.getMinutes()).padStart(2,"0"));
       renderAll();
-      toast("已更新到最新");
-    }else{toast("数据格式异常");}
+      if(!silent) toast("已更新到最新");
+    }else if(!silent){toast("数据格式异常");}
     s.remove();
   };
-  s.onerror=function(){toast("离线模式：数据每日 10:00 自动更新");s.remove();};
+  s.onerror=function(){if(!silent) toast("离线模式：数据每日 10:00 自动更新");s.remove();};
   document.head.appendChild(s);
 }
 
@@ -798,13 +819,14 @@ document.addEventListener("touchmove",e=>{
 document.addEventListener("touchend",()=>{pulling=0;});
 
 function renderAll(){
-  renderStats();renderChips();renderList();
+  renderStats();renderSrcChips();renderChips();renderList();
   renderLandStats();renderLandFilters();renderLand();
   $("#upd").textContent=LAST_UPDATE;
   $("#lref").textContent=localStorage.getItem("lastRefresh")||"—";
 }
 renderAll();
 try{const st=localStorage.getItem("mobile_tab");if(st)switchTab(st);}catch(e){}
+refresh(true);
 </script>
 </body>
 </html>
